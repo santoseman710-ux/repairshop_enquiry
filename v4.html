@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Motor Shop Repair System</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial;
+    background: url("https://t4.ftcdn.net/jpg/07/66/66/51/360_F_766665129_7Hd9T63kdA76k7Z2RmIE1yumK6bW239p.jpg") no-repeat center center fixed;
+    background-size: cover;
+    color: white;
+    overflow-x: hidden;
+}
+
+/* ANIMATED OVERLAY */
+body::before {
+    content: "";
+    position: fixed;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(0,150,255,0.2), transparent 70%);
+    animation: moveBg 10s linear infinite;
+    top: -50%;
+    left: -50%;
+    z-index: -1;
+}
+
+@keyframes moveBg {
+    0% { transform: translate(0,0); }
+    50% { transform: translate(50px,50px); }
+    100% { transform: translate(0,0); }
+}
+
+/* NAV */
+nav {
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(12px);
+    text-align: center;
+    padding: 10px;
+    box-shadow: 0 0 15px rgba(0,150,255,0.4);
+}
+
+nav button {
+    width: auto;
+    margin: 5px;
+}
+
+/* SECTIONS */
+.section {
+    display: none;
+    padding: 20px;
+    text-align: center;
+    animation: fadeSlide 0.5s ease;
+}
+
+#landing { display: block; }
+
+@keyframes fadeSlide {
+    from { opacity: 0; transform: translateY(20px);}
+    to { opacity: 1; transform: translateY(0);}
+}
+
+/* CARD */
+.card {
+    background: rgba(20, 30, 60, 0.65);
+    color: white;
+    padding: 20px;
+    margin: 15px auto;
+    max-width: 500px;
+    border-radius: 20px;
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 0 20px rgba(0,150,255,0.3);
+    transition: 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 0 30px rgba(0,150,255,0.6);
+}
+
+/* INPUT */
+input, textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 6px 0;
+    border-radius: 8px;
+    border: none;
+}
+
+/* BUTTON */
+button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 8px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #00c6ff, #0072ff);
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    transform: scale(1.07);
+    box-shadow: 0 0 15px #00c6ff;
+}
+
+/* QUEUE */
+ul { list-style: none; padding: 0; }
+
+li {
+    background: rgba(255,255,255,0.1);
+    margin: 5px;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+/* TEXT */
+p { color: #ddd; }
+
+/* FOOTER */
+footer {
+    text-align: center;
+    padding: 10px;
+    background: rgba(0,0,0,0.6);
+    margin-top: 20px;
+    box-shadow: 0 0 10px rgba(0,150,255,0.3);
+}
+</style>
+</head>
+
+<body>
+
+<nav>
+    <button onclick="show('landing')">Home</button>
+    <button onclick="show('signin')">Login</button>
+    <button onclick="show('signup')">Sign Up</button>
+</nav>
+
+<div id="landing" class="section">
+    <div class="card">
+        <h2>Motor Shop Repair System</h2>
+        <p>Manage repair inquiries and queue efficiently.</p>
+    </div>
+
+    <div class="card">
+        <h3>Features</h3>
+        <p>✔ Login System<br>✔ Queue Tracking<br>✔ Inquiry Form</p>
+    </div>
+
+    <div class="card">
+        <h3>About</h3>
+        <p>This system helps motor shops organize customers and reduce waiting confusion.</p>
+    </div>
+
+    <div class="card">
+        <h3>Contact</h3>
+        <p>Email: motorshop@gmail.com</p>
+        <p>Phone: 0912-345-6789</p>
+    </div>
+</div>
+
+<div id="signup" class="section">
+    <div class="card">
+        <h2>Create Account</h2>
+        <input id="newUser" placeholder="Username">
+        <input id="newPass" type="password" placeholder="Password">
+        <button onclick="createAccount()">Sign Up</button>
+    </div>
+</div>
+
+<div id="signin" class="section">
+    <div class="card">
+        <h2>Login</h2>
+        <input id="user" placeholder="Username">
+        <input id="pass" type="password" placeholder="Password">
+        <button onclick="login()">Login</button>
+    </div>
+</div>
+
+<div id="dashboard" class="section">
+    <div class="card">
+        <h2>Submit Inquiry</h2>
+        <form id="form">
+            <input id="name" placeholder="Customer Name" required>
+            <input id="model" placeholder="Motor Model" required>
+            <textarea id="issue" placeholder="Issue" required></textarea>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h2>Queue</h2>
+        <ul id="queue"></ul>
+        <button onclick="clearQueue()">Clear Queue</button>
+    </div>
+
+    <div class="card">
+        <button onclick="show('landing')">Logout</button>
+    </div>
+</div>
+
+<footer>
+Motor Shop System © 2026
+</footer>
+
+<script>
+let queue = [];
+let savedUser = "admin";
+let savedPass = "1234";
+
+function show(id){
+    document.querySelectorAll(".section").forEach(s => s.style.display="none");
+    document.getElementById(id).style.display="block";
+}
+
+function createAccount(){
+    savedUser = newUser.value;
+    savedPass = newPass.value;
+    alert("Account Created!");
+    show("signin");
+}
+
+function login(){
+    if(user.value === savedUser && pass.value === savedPass){
+        show("dashboard");
+    } else {
+        alert("Wrong login");
+    }
+}
+
+form.addEventListener("submit", function(e){
+    e.preventDefault();
+    queue.push(name.value + " - " + model.value + " (" + issue.value + ")");
+    displayQueue();
+    form.reset();
+});
+
+function displayQueue(){
+    let queueList = document.getElementById("queue");
+    queueList.innerHTML = "";
+    queue.forEach((q,i)=>{
+        let li = document.createElement("li");
+        li.textContent = (i+1)+". "+q;
+        queueList.appendChild(li);
+    });
+}
+
+function clearQueue(){
+    queue = [];
+    displayQueue();
+}
+</script>
+
+</body>
+</html>
